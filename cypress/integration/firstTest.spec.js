@@ -155,5 +155,9 @@ describe('Our first suite', () => {
     cy.contains('Toastr').click()
     cy.get('[type="checkbox"]').eq(0).click({force:true})
   })
-})
 
+  it('lezione xyz', () => {
+    // dsdfsdf
+  })
+
+})
