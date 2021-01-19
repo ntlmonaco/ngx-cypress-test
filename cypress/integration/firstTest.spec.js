@@ -118,27 +118,39 @@ describe('Our first suite', () => {
     cy.contains('Datepicker').click()
 
     let date = new Date()
-    cy.log('Date 2', date.toString())
+    date.setDate(date.getDate() + 90)
 
-    date.setDate(date.getDate() + 5)
-    let futureDay = date.getDay()
+    let futureDay = date.getDate()
+    let futureMonth = date.toLocaleString('en-GB', {month: 'short'})
 
-    let futureMonth = date.toLocaleString('default', {month: 'short'})
+    let dateAssert = futureMonth + ' ' + futureDay + ', ' + date.getFullYear()
+    cy.log('Date assert', dateAssert)
 
     cy.log('future day', futureDay)
     cy.log('future month', futureMonth)
 
-    cy.get('nb-calendar-navigation').invoke('attr', 'ng-reflect-date').then( date )
-
-
     cy.contains('nb-card', 'Common Datepicker').find('input').then(input => {
       cy.wrap(input).click()
-      cy.get('nb-calendar-day-picker').contains('17').click()
-      cy.wrap(input).invoke('prop', 'value').should('contain', 'Jan 17, 2021')
-    })
+      selectDayFromCurrent()
 
-    cy.get('nb-card input')
+
+      function selectDayFromCurrent() {
+        cy.get('nb-calendar-navigation').invoke('attr', 'ng-reflect-date').then( dateAttribute => {
+          if (!dateAttribute.includes(futureMonth)) {
+            cy.log("Clicco next month")
+            cy.get("[data-name='chevron-right']").click()
+    
+            selectDayFromCurrent()
+          } else {
+            let regExp = new RegExp("^" + futureDay +"$")
+            cy.get('nb-calendar-day-picker nb-calendar-day-cell').contains(regExp).click()
+          }
+        })
+      }
+
+      cy.wrap(input).invoke('prop', 'value').should('contain', dateAssert)
   })
+})
 
   it('radio button', () => {
     cy.visit('/')
