@@ -1,5 +1,7 @@
 /// <reference types="cypress" />
 
+// const { eq } = require("cypress/types/lodash")
+
 describe('Our first suite', () => {
 
   it('first test', () => {
@@ -110,10 +112,24 @@ describe('Our first suite', () => {
       })
   })
 
-  it('assert property', () => {
+  it.only('assert property', () => {
     cy.visit('/')
     cy.contains('Forms').click()
     cy.contains('Datepicker').click()
+
+    let date = new Date()
+    cy.log('Date 2', date.toString())
+
+    date.setDate(date.getDate() + 5)
+    let futureDay = date.getDay()
+
+    let futureMonth = date.toLocaleString('default', {month: 'short'})
+
+    cy.log('future day', futureDay)
+    cy.log('future month', futureMonth)
+
+    cy.get('nb-calendar-navigation').invoke('attr', 'ng-reflect-date').then( date )
+
 
     cy.contains('nb-card', 'Common Datepicker').find('input').then(input => {
       cy.wrap(input).click()
@@ -156,35 +172,87 @@ describe('Our first suite', () => {
     cy.get('[type="checkbox"]').eq(0).click({ force: true })
   })
 
-  it.only('lists and dropdowns', () => {
+  it('lists and dropdowns', () => {
+    const colors= {
+      "Light": "rgb(255, 255, 255)",
+      "Dark": "rgb(34, 43, 69)",
+      "Cosmic": "rgb(50, 50, 89)",
+      "Corporate": "rgb(255, 255, 255)"
+    }
+
     cy.visit('/')
-    
+
     //1
     cy.get('nav nb-select').click()
     cy.get('.options-list').contains('Dark').click()
     cy.get('nav nb-select button').should('contain','Dark')
     cy.get('nb-layout-header nav').should('have.css', 'background-color', 'rgb(34, 43, 69)')
 
+    cy.log("Inio la parte 2")
+
     //2
     cy.get('nav nb-select').then( dropdown =>  {
       cy.wrap(dropdown).click()
       cy.get('.options-list nb-option').each( (listItem, index) => {
+        cy.log("******* Nuovo loop")
+
         const itemText = listItem.text().trim()
 
-        const colors= {
-          "Light": "rgb(255, 255, 255)",
-          "Dark": "rgb(34, 43, 69)",
-          "Cosmic": "rgb(50, 50, 89)",
-          "Corporate": "rgb(255, 255, 255)"
-        }
+        cy.log("Item text ", itemText)
+        cy.log("Index ", index)
 
         cy.wrap(listItem).click()
         cy.wrap(dropdown).should('contain', itemText)
         cy.get('nb-layout-header nav').should('have.css', 'background-color', colors[itemText])
-        if( index < 3 ){
+        // if( index < 3 ){
           cy.wrap(dropdown).click()
-        }
+        // }
       })
     })
   })
+
+  it('Web tables', () => {
+    cy.visit('/')
+    cy.contains('Tables & Data').click()
+    cy.contains('Smart Table').click()
+
+    //1
+    cy.get('tbody').contains('tr', 'Larry').then( tableRow => {
+      cy.wrap(tableRow).find('.nb-edit').click()
+      cy.wrap(tableRow).find('[placeholder="Age"]').clear().type('25')
+      cy.wrap(tableRow).find('.nb-checkmark').click()
+      cy.wrap(tableRow).find('td').eq(6).should('contain', '25')
+    })
+
+    //2
+    cy.get('thead').find('.nb-plus').click()
+    cy.get('thead').find('tr').eq(2).then( tableRow =>  {
+      cy.wrap(tableRow).find('[placeholder="First Name"]').type('Artem')
+      cy.wrap(tableRow).find('[placeholder="Last Name"]').type('Bondar')
+      cy.wrap(tableRow).find('.nb-checkmark').click()
+    })
+
+    cy.get('tbody tr').first().find('td').then( tableColumns => {
+      cy.wrap(tableColumns).eq(2).should('contain', 'Artem')
+      cy.wrap(tableColumns).eq(3).should('contain','Bondar')
+    })
+
+    //3
+    const age = [7, 20, 30, 40, 200]
+
+    cy.wrap(age).each( (age, index) => {
+      cy.log('Age', age)
+      cy.log('Index ', index)
+
+      cy.get('thead [placeholder="Age"]').clear().type(age)
+      cy.wait(500)
+      cy.get('tbody tr').each( tableRow => {
+        if(age == 200){
+          cy.wrap(tableRow).should('contain', 'No data found')
+        } else { 
+          cy.wrap(tableRow).find('td').eq(6).should('have.text', age)
+        }
+      })
+    })
+  })  
 })
