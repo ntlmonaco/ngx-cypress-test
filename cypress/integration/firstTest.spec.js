@@ -280,4 +280,24 @@ describe('Our first suite', () => {
 
   })
 
+  it('dialog box', ()  => {
+    cy.visit('/')
+    cy.contains('Tables & Data').click()
+    cy.contains('Smart Table').click()
+
+    cy.get('tbody tr').first().find('.nb-trash').click()
+    cy.on('window:alert', (confirm) => {
+      expect(confirm).to.equal('Are you sure you want to delete?')
+    })
+
+    const stub = cy.stub()
+    cy.on('window:confirm', stub)
+    cy.get('tbody tr').first().find('.nb-trash').click().then(() => {
+
+      expect(stub.getCall(0)).to.be.calledWith('Are you sure you want to delete?')
+    })
+
+    cy.get('tbody tr').first().find('.nb-trash').click()
+    cy.on('window:confirm', () => false)
+  })
 })
