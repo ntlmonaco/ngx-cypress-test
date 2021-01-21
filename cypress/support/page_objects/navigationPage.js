@@ -6,15 +6,12 @@ function selectGroupMenuItem(groupName){
             }
         })
     })
-
 }
-
 
 export class NavigationPage{
     formLayoutsPage(){
         selectGroupMenuItem('Form')
         cy.contains('Form Layouts').click()
-
     }
 
     datepickerPage(){
@@ -35,7 +32,6 @@ export class NavigationPage{
     tooltipPage(){
         selectGroupMenuItem('Modal & Overlays')
         cy.contains('Tooltip').click()
-
     }   
 }
 
