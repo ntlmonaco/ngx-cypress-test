@@ -66,17 +66,7 @@ describe('Eprice suite', () => {
         homePage.closeCookieBanner()
         homePage.validateCategoriesName()
 
-        const expectedNames = ['primo', 'sss']
-
-        // cy.get('.openSubMenu').contains('Informatica').trigger('mouseover')
-        // cy.get('.hidden').invoke('show')
-       
-
 
         cy.wait(5000)
     })
-
-   
-
-
 })
