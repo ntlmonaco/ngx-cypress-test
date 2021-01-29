@@ -1,4 +1,7 @@
-import { homePage } from "../../support/page_objects/eprice/homePage"
+import { homePage } from "../../support/page_objects/eprice/HomePage"
+import { loginPage } from "../../support/page_objects/eprice/loginPage"
+import { paginaRisultati } from "../../support/page_objects/eprice/PaginaRisultati"
+import { registratiPage } from "../../support/page_objects/eprice/RegistratiPage"
 
 describe('Eprice suite', () => {
     it('aggiungi al carrello test', () => {
@@ -9,8 +12,6 @@ describe('Eprice suite', () => {
         // sono in home page
         homePage.closeCookieBanner()
         
-
-
         cy.get('.react-autosuggest__input').then(campoRicerca => {
             expect(campoRicerca).to.have.attr('placeholder', 'Cerca prodotto, categoria, marca...')
         })
@@ -19,13 +20,7 @@ describe('Eprice suite', () => {
         cy.get('div.w_navCat_new dl').should('have.length', 18)
 
         //verifico il Login
-        cy.get('#logUser div.btn_head a').first().then(campoLogin => {
-            expect(campoLogin).to.have.text('LOGIN')
-        })
-
-        cy.get('#logUser div.btn_head a').eq(1).then(campoAiuto=> {
-            expect(campoAiuto).to.have.text('AIUTO')
-        })
+   
 
         cy.get('#iubFooterBtn').click()
 
@@ -56,17 +51,37 @@ describe('Eprice suite', () => {
         cy.wait(5000)
 
         // provo il primo dropdown
-
-
     })
 
-    it.only('cataloghi test', ()=> {
+    it('cataloghi test', ()=> {
         cy.visit('http://www.eprice.it')
 
         homePage.closeCookieBanner()
-        homePage.validateCategoriesName()
-
+        // homePage.validateCategoriesName()
+        // homePage.validateImagesInConsigliatiDaNoi()
+        homePage.cercaProdotto('TV')
 
         cy.wait(5000)
+
+        // paginaRisultati.validaPrezziProdotti()
+        paginaRisultati.cliccaManufacturer('Samsung')
+        paginaRisultati.cliccaManufacturer('Lg')
     })
+
+
+    /*
+        WHEN: inserisco usename e password errati nella pagina login
+        THEN: Errore 'emai l o password non valida'
+    */
+    it('login fallito test', ()=> {
+        cy.visit('http://www.eprice.it')
+
+        // siamo in home page
+        homePage.closeModaleCookie()
+        homePage.clickLogin()
+
+        // siamo in Login Page
+        loginPage.fillForm('fake@email2','fakepassword2', true)
+    })
+
 })

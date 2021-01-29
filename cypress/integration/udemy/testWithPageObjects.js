@@ -1,5 +1,5 @@
-import { onFormLayoutsPage } from "../support/page_objects/formLayoutsPage"
-import { navigateTo } from "../support/page_objects/navigationPage"
+import { onFormLayoutsPage } from "../../support/page_objects/formLayoutsPage"
+import { navigateTo } from "../../support/page_objects/navigationPage"
 
 describe('Test with Page Objects', () => {
     beforeEach('open application',  () =>  {
